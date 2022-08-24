@@ -28,6 +28,7 @@
     "@nestjs/core": "^9.0.11",
     "@nestjs/platform-fastify": "^9.0.11",
     "@prisma/client": "^4.2.1",
+    "nest-next": "^10.0.0",
     "next": "^12.2.5",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
