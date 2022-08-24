@@ -9,8 +9,8 @@ export class AuthController {
   }
 
   @Get('login')
-  async login(@Req() req: FastifyRequest, @Res() res: FastifyReply) {
-    return 'OK';
+  async login(@Req() req: FastifyRequest) {
+    return { stirng: 'login' };
   }
 
   @Get('authorize')
