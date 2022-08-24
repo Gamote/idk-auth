@@ -9,14 +9,14 @@ export class AuthController {
     //
   }
 
-  @Get('login')
-  @Render('Login')
-  async login(@Res() res: RenderableResponse) {
-    // return { stirng: 'login' };
-    res.render('Index', {
-      title: 'Next with Nest',
-    });
-  }
+  // @Get('login')
+  // @Render('Login')
+  // async login(@Res() res: RenderableResponse) {
+  //   // return { stirng: 'login' };
+  //   void res.render('Index', {
+  //     title: 'Next with Nest',
+  //   });
+  // }
 
   @Get('authorize')
   async authorize(@Req() req: FastifyRequest, @Res() res: FastifyReply) {

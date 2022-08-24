@@ -7,16 +7,19 @@ import { MercuryServerService } from './services/mercury-server.service';
 import { RenderModule } from 'nest-next';
 import Next from 'next';
 import { resolve } from 'path';
+import { ViewModule } from './modules/view/view.module';
 
 @Module({
   imports: [
-    RenderModule.forRootAsync(
-      Next({
-        dev: process.env.NODE_ENV !== 'production',
-        dir: resolve(__dirname, '..'),
-      }),
-      { passthrough404: true, viewsDir: null },
-    ),
+    // RenderModule.forRootAsync(
+    //   Next({
+    //     dev: process.env.NODE_ENV !== 'production',
+    //     dir: resolve(__dirname, '..'),
+    //     customServer: true,
+    //   }),
+    //   { passthrough404: true, viewsDir: null },
+    // ),
+    ViewModule,
   ],
   controllers: [AuthController],
   providers: [
