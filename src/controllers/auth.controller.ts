@@ -1,7 +1,6 @@
-import { Controller, Get, Render, Req, Res } from '@nestjs/common';
+import { Controller, Get, Req, Res } from '@nestjs/common';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { MercuryServerService } from '../services/mercury-server.service';
-import { RenderableResponse } from 'nest-next';
 
 @Controller('auth')
 export class AuthController {
@@ -10,11 +9,8 @@ export class AuthController {
   }
 
   @Get('login')
-  // @Render('Login')
-  async login(@Req() req: FastifyRequest, @Res() res: RenderableResponse) {
-    return res.render('login', {
-      title: 'Next with Nest',
-    });
+  async login(@Req() req: FastifyRequest, @Res() res: FastifyReply) {
+    return 'OK';
   }
 
   @Get('authorize')
