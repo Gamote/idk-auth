@@ -3,7 +3,7 @@ import next from 'next';
 import { NextServer } from 'next/dist/server/next';
 
 @Injectable()
-export class ViewService implements OnModuleInit {
+export class RenderService implements OnModuleInit {
   private server: NextServer;
 
   async onModuleInit(): Promise<void> {

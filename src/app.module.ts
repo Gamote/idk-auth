@@ -1,19 +1,10 @@
 import { Module } from '@nestjs/common';
-import { PrismaService } from './lib/services/prisma.service';
-import { UsersService } from './services/users.service';
-import { AuthController } from './controllers/auth.controller';
-import { MercuryStorageAdapterService } from './services/mercury-storage-adapter.service';
-import { MercuryServerService } from './services/mercury-server.service';
-import { ViewModule } from './modules/view/view.module';
+import { RenderModule } from './modules/render/render.module';
+import { PrismaModule } from './modules/prisma/prisma.module';
+import { AuthModule } from './modules/auth/auth.module';
+import { UsersModule } from './modules/users/users.module';
 
 @Module({
-  imports: [ViewModule],
-  controllers: [AuthController],
-  providers: [
-    PrismaService,
-    UsersService,
-    MercuryStorageAdapterService,
-    MercuryServerService,
-  ],
+  imports: [RenderModule, PrismaModule, UsersModule, AuthModule],
 })
 export class AppModule {}

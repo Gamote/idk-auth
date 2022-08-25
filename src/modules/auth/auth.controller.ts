@@ -1,6 +1,6 @@
 import { Controller, Get, Req, Res } from '@nestjs/common';
 import { FastifyRequest, FastifyReply } from 'fastify';
-import { MercuryServerService } from '../services/mercury-server.service';
+import { MercuryServerService } from './services/mercury-server.service';
 
 @Controller('auth')
 export class AuthController {

@@ -1,6 +1,6 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { PrismaService } from './lib/services/prisma.service';
+import { PrismaService } from './modules/prisma/prisma.service';
 import {
   FastifyAdapter,
   NestFastifyApplication,

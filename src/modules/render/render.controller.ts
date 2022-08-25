@@ -1,11 +1,10 @@
 import { Controller, Get, Res, Req } from '@nestjs/common';
-
-import { ViewService } from './view.service';
+import { RenderService } from './render.service';
 import { FastifyReply, FastifyRequest } from 'fastify';
 
 @Controller('/')
-export class ViewController {
-  constructor(private viewService: ViewService) {}
+export class RenderController {
+  constructor(private viewService: RenderService) {}
 
   @Get('*')
   static(@Req() req: FastifyRequest, @Res() res: FastifyReply) {
