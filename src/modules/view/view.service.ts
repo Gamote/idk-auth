@@ -9,8 +9,9 @@ export class ViewService implements OnModuleInit {
   async onModuleInit(): Promise<void> {
     try {
       this.server = next({
+        // TODO: move to module config
         dev: process.env.NODE_ENV !== 'production',
-        dir: './src/client',
+        dir: './client',
       });
       await this.server.prepare();
     } catch (error) {
