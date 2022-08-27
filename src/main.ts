@@ -7,15 +7,12 @@ import {
 } from '@nestjs/platform-fastify';
 
 const bootstrap = async () => {
+  const fastify = new FastifyAdapter();
+
   const app = await NestFactory.create<NestFastifyApplication>(
     AppModule,
-    new FastifyAdapter(),
+    fastify,
   );
-
-  // Allow all CORS
-  app.enableCors({
-    origin: '*',
-  });
 
   // Enable shutdown hooks
   // https://docs.nestjs.com/recipes/prisma#issues-with-enableshutdownhooks
