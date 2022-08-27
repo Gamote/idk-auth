@@ -10,9 +10,13 @@ export class AuthController {
 
   @Get('login')
   @Render('login')
-  async getLogin(@Body() body: any) {
-    console.log('getLogin values', body);
-    return {};
+  async getLogin() {
+    console.log('getLogin values');
+    return {
+      props: {
+        isLoggedIn: false,
+      }
+    };
   }
 
   @Post('login')
