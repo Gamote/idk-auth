@@ -1,4 +1,4 @@
-import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Render, Req, Res } from '@nestjs/common';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { MercuryServerService } from './services/mercury-server.service';
 
@@ -8,9 +8,18 @@ export class AuthController {
     //
   }
 
+  @Get('login')
+  @Render('login')
+  async getLogin(@Body() body: any) {
+    console.log('getLogin values', body);
+    return {};
+  }
+
   @Post('login')
-  async login(@Body() body: any) {
-    console.log('login values', body);
+  @Render('Index')
+  async postLogin(@Body() body: any) {
+    console.log('postLogin values', body);
+    return {};
   }
 
   @Post('register')

@@ -1,0 +1,22 @@
+diff --git a/node_modules/nest-next/dist/render.service.js b/node_modules/nest-next/dist/render.service.js
+index 32e916e..ee16b6c 100644
+--- a/node_modules/nest-next/dist/render.service.js
++++ b/node_modules/nest-next/dist/render.service.js
+@@ -96,7 +96,7 @@ class RenderService {
+         const getViewPath = this.getViewPath.bind(this);
+         server.render = (response, view, data) => {
+             const isFastify = response.request !== undefined;
+-            const res = isFastify ? response.res : response;
++            const res = isFastify ? response.raw : response;
+             const req = isFastify ? response.request.raw : response.req;
+             if (req && res && renderer) {
+                 if (isFastify) {
+@@ -126,7 +126,7 @@ class RenderService {
+             server
+                 .getInstance()
+                 .decorateReply('render', function (view, data) {
+-                const res = this.res;
++                const res = this.res.raw;
+                 const req = this.request.raw;
+                 if (!renderer) {
+                     throw new common_1.InternalServerErrorException('RenderService: renderer is not set');
