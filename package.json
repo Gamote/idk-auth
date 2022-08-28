@@ -6,7 +6,6 @@
   "private": true,
   "license": "UNLICENSED",
   "scripts": {
-    "postinstall": "patch-package",
     "prebuild": "rimraf dist",
     "build": "NODE_ENV=production nest build && NODE_ENV=production cd client && next build",
     "format": "prettier --write \"src/**/*.ts\" \"test/**/*.ts\"",
@@ -32,10 +31,7 @@
     "@prisma/client": "^4.2.1",
     "axios": "^0.27.2",
     "formik": "^2.2.9",
-    "nest-next": "^10.0.0",
     "next": "^12.2.5",
-    "patch-package": "^6.4.7",
-    "postinstall-postinstall": "^2.1.0",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "reflect-metadata": "^0.1.13",

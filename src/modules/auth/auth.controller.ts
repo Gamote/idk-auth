@@ -1,22 +1,35 @@
 import { Body, Controller, Get, Post, Render, Req, Res } from '@nestjs/common';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { MercuryServerService } from './services/mercury-server.service';
+import { RenderService } from "../render/render.service";
 
 @Controller()
 export class AuthController {
-  constructor(private readonly mercuryServerService: MercuryServerService) {
+  constructor(private readonly mercuryServerService: MercuryServerService, private readonly renderService: RenderService) {
     //
   }
 
   @Get('login')
-  @Render('login')
-  async getLogin() {
-    console.log('getLogin values');
-    return {
-      props: {
-        isLoggedIn: false,
-      }
-    };
+  // @Render('login')
+  async getLogin(@Req() req: FastifyRequest, @Res() res: FastifyReply) {
+    // Return directly
+    // return {
+    //   props: {
+    //     isLoggedIn: false,
+    //   }
+    // };
+
+    // Render an 404 with nextjs
+    // return this.renderService.getNextServer().render404(req.raw, res.raw);
+
+    // Render an 404 without nextjs
+    // TODO
+
+    // Render the page with nextjs
+    return this.renderService.getNextServer()
+      // @ts-ignore
+      .render(req.raw, res.raw, '/login', { best: "world", r: 323, rsisr: {rsiris: 22} });
+
   }
 
   @Post('login')
