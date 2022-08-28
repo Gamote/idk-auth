@@ -11,7 +11,7 @@ const Login: FC = (props) => {
   };
 
   return (
-    <div style={{ width: 200, background: 'red' }}>
+    <div>
       <LoginForm onSubmit={onSubmit} />
     </div>
   );

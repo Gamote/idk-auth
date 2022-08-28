@@ -10,7 +10,7 @@ const Register: FC = () => {
   };
 
   return (
-    <div style={{ width: 200, background: 'red' }}>
+    <div>
       <RegisterForm onSubmit={onSubmit} />
     </div>
   );
