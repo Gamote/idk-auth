@@ -10,7 +10,6 @@ export class AuthController {
   }
 
   @Get('login')
-  // @Render('login')
   async getLogin(@Req() req: FastifyRequest, @Res() res: FastifyReply) {
     // Return directly
     // return {
@@ -29,19 +28,36 @@ export class AuthController {
     return this.renderService.getNextServer()
       // @ts-ignore
       .render(req.raw, res.raw, '/login', { best: "world", r: 323, rsisr: {rsiris: 22} });
-
   }
 
   @Post('login')
   @Render('Index')
-  async postLogin(@Body() body: any) {
-    console.log('postLogin values', body);
-    return {};
+  async postLogin(
+    @Req() req: FastifyRequest,
+    @Res() res: FastifyReply,
+    @Body() body: any
+  ) {
+    console.log("Cookies", req.cookies);
+
+    res.setCookie('mauth', `secret-${Math.random().toString()}`, {
+      httpOnly: true,
+      sameSite: 'strict',
+      maxAge: 7 * 24 * 60 * 60 * 1000
+    });
+
+    return res.status(302).redirect('/');
+  }
+
+  @Get('register')
+  async getRegister(@Req() req: FastifyRequest, @Res() res: FastifyReply) {
+    return this.renderService.getNextServer()
+      // @ts-ignore
+      .render(req.raw, res.raw, '/register', { best: "world", r: 323, rsisr: {rsiris: 22} });
   }
 
   @Post('register')
-  async register(@Body() body: any) {
-    console.log('register values', body);
+  async postRegister(@Body() body: any) {
+    return {};
   }
 
   @Get('authorize')
