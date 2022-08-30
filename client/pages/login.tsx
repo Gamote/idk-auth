@@ -1,28 +1,24 @@
 import React from 'react';
 import { FC } from 'react';
-import LoginForm, { LoginFormProps } from '../components/organisms/LoginForm';
-import { NextPageContext } from "next";
+import LoginForm from '../components/organisms/LoginForm';
+import { FastifyGetServerSideProps } from '../../src/modules/render/render.types';
 
-const Login: FC = (props) => {
-  console.log('Login::props:', props);
-
-  const onSubmit: LoginFormProps['onSubmit'] = async (values) => {
-    console.info('Login::values', values);
-  };
-
-  return (
-    <div>
-      <LoginForm onSubmit={onSubmit} />
-    </div>
-  );
+export type LoginPageProps = {
+  error?: string;
 };
 
-export const getServerSideProps = (ctx: NextPageContext) => {
-  // console.info('Login::getServerSideProps', ctx);
+const LoginPage: FC = ({ error }: LoginPageProps) => (
+  <div>
+    {error && <p>Error: {error}</p>}
 
-  return {
-    props: ctx.query,
-  };
-}
+    <LoginForm
+      initialValues={{ username: 'contact@gamote.ro', password: '123456' }}
+    />
+  </div>
+);
 
-export default Login;
+export const getServerSideProps: FastifyGetServerSideProps<
+  LoginPageProps
+> = async ({ query }) => query;
+
+export default LoginPage;

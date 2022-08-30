@@ -11,7 +11,6 @@ export class RenderController {
   @Get('_next/*')
   @Get('static/*')
   static(@Req() req: FastifyRequest, @Res() res: FastifyReply) {
-    console.log("console.log()");
     const handle = this.viewService.getNextServer().getRequestHandler();
 
     // We need to return the response or the request will hang

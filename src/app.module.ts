@@ -1,28 +1,9 @@
 import { Module } from '@nestjs/common';
 import { PrismaModule } from './modules/prisma/prisma.module';
 import { AuthModule } from './modules/auth/auth.module';
-import { UsersModule } from './modules/users/users.module';
-import { RenderModule } from "./modules/render/render.module";
-// import { RenderModule } from 'nest-next';
-// import Next from 'next';
+import { RenderModule } from './modules/render/render.module';
 
 @Module({
-  imports: [
-    // RenderModule.forRootAsync(
-    //   Next({
-    //     // dev: process.env.NODE_ENV !== 'production',
-    //     dev: false,
-    //     dir: './client',
-    //   }),
-    //   {
-    //     passthrough404: true,
-    //     viewsDir: null,
-    //   },
-    // ),
-    RenderModule,
-    PrismaModule,
-    UsersModule,
-    AuthModule,
-  ],
+  imports: [RenderModule, PrismaModule, AuthModule],
 })
 export class AppModule {}

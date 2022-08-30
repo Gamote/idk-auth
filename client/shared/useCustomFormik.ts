@@ -36,6 +36,7 @@ const useCustomFormik = <Values>(config: FormikConfig<Values>) => {
    */
   const field = (id: keyof Values) => ({
     id,
+    name: id,
     value: formik.values[id],
     onChange: getChangeHandler(),
     onBlur: getBlurHandler(),

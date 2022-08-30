@@ -18,6 +18,7 @@ export enum TextFieldAutoComplete {
 
 export type TextFieldProps = {
   id: string;
+  name: string;
   type: HTMLInputTypeAttribute;
   label: string;
   placeholder?: string;
@@ -33,6 +34,7 @@ export type TextFieldProps = {
  */
 const TextField: FC<TextFieldProps> = ({
   id,
+  name,
   type,
   label,
   placeholder,
@@ -66,6 +68,7 @@ const TextField: FC<TextFieldProps> = ({
       <div className="relative mt-1 rounded-md shadow-sm">
         <input
           id={id}
+          name={name}
           type={type}
           className={`block pr-10 w-full sm:text-sm rounded-md ${
             !error

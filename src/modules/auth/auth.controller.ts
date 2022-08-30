@@ -1,13 +1,17 @@
-import { Body, Controller, Get, Post, Render, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { MercuryServerService } from './services/mercury-server.service';
-import { RenderService } from "../render/render.service";
+import { RenderService } from '../render/render.service';
+import { UsersService } from './users/users.service';
+import { LoginPageProps } from '../../../client/pages/login';
 
 @Controller()
 export class AuthController {
-  constructor(private readonly mercuryServerService: MercuryServerService, private readonly renderService: RenderService) {
-    //
-  }
+  constructor(
+    private readonly userService: UsersService,
+    private readonly mercuryServerService: MercuryServerService,
+    private readonly renderService: RenderService,
+  ) {}
 
   @Get('login')
   async getLogin(@Req() req: FastifyRequest, @Res() res: FastifyReply) {
@@ -25,24 +29,40 @@ export class AuthController {
     // TODO
 
     // Render the page with nextjs
-    return this.renderService.getNextServer()
-      // @ts-ignore
-      .render(req.raw, res.raw, '/login', { best: "world", r: 323, rsisr: {rsiris: 22} });
+    return this.renderService.render(req.raw, res.raw, '/login', undefined);
   }
 
   @Post('login')
-  @Render('Index')
   async postLogin(
     @Req() req: FastifyRequest,
     @Res() res: FastifyReply,
-    @Body() body: any
+    @Body() body: any,
   ) {
-    console.log("Cookies", req.cookies);
+    console.log('Login::cookies', req.cookies);
+    console.log('Login::body', body);
 
-    res.setCookie('mauth', `secret-${Math.random().toString()}`, {
+    let user;
+
+    try {
+      user = await this.userService.validate(body.username, body.password);
+    } catch (e) {
+      return this.renderService.render<LoginPageProps>(
+        req.raw,
+        res.raw,
+        '/login',
+        {
+          error: e.message,
+        },
+      );
+    }
+
+    // TODO: set the user in the session
+    console.log('Login::user', user);
+
+    res.setCookie('mauth', `secret-${user.id}`, {
       httpOnly: true,
       sameSite: 'strict',
-      maxAge: 7 * 24 * 60 * 60 * 1000
+      maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
     return res.status(302).redirect('/');
@@ -50,14 +70,12 @@ export class AuthController {
 
   @Get('register')
   async getRegister(@Req() req: FastifyRequest, @Res() res: FastifyReply) {
-    return this.renderService.getNextServer()
-      // @ts-ignore
-      .render(req.raw, res.raw, '/register', { best: "world", r: 323, rsisr: {rsiris: 22} });
+    return this.renderService.render(req.raw, res.raw, '/register', undefined);
   }
 
   @Post('register')
   async postRegister(@Body() body: any) {
-    return {};
+    throw new Error('Method not implemented.');
   }
 
   @Get('authorize')

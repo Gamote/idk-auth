@@ -1,8 +1,8 @@
 import { Injectable, OnModuleInit } from '@nestjs/common';
 import next from 'next';
 import { NextServer } from 'next/dist/server/next';
-import { BaseNextRequest, BaseNextResponse } from "next/dist/server/base-http";
-import { IncomingMessage, ServerResponse } from "http";
+import { BaseNextRequest, BaseNextResponse } from 'next/dist/server/base-http';
+import { IncomingMessage, ServerResponse } from 'http';
 
 @Injectable()
 export class RenderService implements OnModuleInit {
@@ -19,7 +19,7 @@ export class RenderService implements OnModuleInit {
           // Disabling file-system routing, so we can explicitly handle the routing
           // https://nextjs.org/docs/advanced-features/custom-server#disabling-file-system-routing
           useFileSystemPublicRoutes: false,
-        }
+        },
       });
 
       await this.server.prepare();
@@ -32,8 +32,14 @@ export class RenderService implements OnModuleInit {
     return this.server;
   }
 
-  // TODO
-  render(req: BaseNextRequest | IncomingMessage, res: ServerResponse | BaseNextResponse, pathname: string, query): Promise<void> {
-    return this.server.render(req, res, pathname, query);
+  render<Props>(
+    req: BaseNextRequest | IncomingMessage,
+    res: ServerResponse | BaseNextResponse,
+    pathname: string,
+    props: Props,
+  ): Promise<void> {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
+    return this.server.render(req, res, pathname, { props });
   }
 }

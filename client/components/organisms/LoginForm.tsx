@@ -3,30 +3,23 @@ import React, { FC } from 'react';
 import * as yup from 'yup';
 import { loginSchema } from '../../shared/validation';
 import TextField, { TextFieldAutoComplete } from '../molecules/TextField';
-import useCustomFormik from '../../shared/useCustomFormik';
+import FormikClassicForm, { FormikClassicFormProps } from './FormikClassicForm';
 
 export type LoginFormValues = yup.InferType<typeof loginSchema>;
 
 export type LoginFormProps = {
-  onSubmit: (values: LoginFormValues) => void;
+  initialValues?: Partial<LoginFormValues>;
 };
 
-const LoginForm: FC<LoginFormProps> = ({ onSubmit }) => {
-  const formik = useCustomFormik<LoginFormValues>({
-    initialValues: {
-      username: '',
-      password: '',
-    },
-    validationSchema: loginSchema,
-    validateOnChange: false,
-    validateOnBlur: true,
-    onSubmit: (values) => {
-      onSubmit(values);
-    },
-  });
-
-  return (
-    <div className="mt-8 space-y-6">
+const LoginForm: FC<LoginFormProps> = ({ initialValues }) => {
+  /**
+   * Function that returns the form children.
+   * @param formik
+   */
+  const formChildren: FormikClassicFormProps<LoginFormValues>['children'] = (
+    formik,
+  ) => (
+    <>
       {/*Inputs*/}
       <div className="space-y-2 rounded-md">
         <TextField
@@ -46,8 +39,8 @@ const LoginForm: FC<LoginFormProps> = ({ onSubmit }) => {
         />
       </div>
 
+      {/*Remember me*/}
       <div className="flex justify-between items-center">
-        {/*Remember me*/}
         <div className="flex items-center">
           <input
             id="remember-me"
@@ -88,6 +81,26 @@ const LoginForm: FC<LoginFormProps> = ({ onSubmit }) => {
         </span>
         Sign in
       </button>
+    </>
+  );
+
+  return (
+    <div className="mt-8 space-y-6">
+      <FormikClassicForm<LoginFormValues>
+        method={'POST'}
+        action={'/login'}
+        config={{
+          initialValues: {
+            username: initialValues?.username || '',
+            password: initialValues?.password || '',
+          },
+          validationSchema: loginSchema,
+          validateOnChange: false,
+          validateOnBlur: true,
+        }}
+      >
+        {formChildren}
+      </FormikClassicForm>
     </div>
   );
 };
