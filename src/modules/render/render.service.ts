@@ -40,6 +40,6 @@ export class RenderService implements OnModuleInit {
   ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    return this.server.render(req, res, pathname, { props });
+    return this.server.render(req, res, pathname, { props: props ?? {} });
   }
 }

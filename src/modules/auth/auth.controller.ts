@@ -3,7 +3,7 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { MercuryServerService } from './services/mercury-server.service';
 import { RenderService } from '../render/render.service';
 import { UsersService } from './users/users.service';
-import { LoginPageProps } from '../../../client/pages/login';
+import { LoginPageProps } from '../../shared/LoginPageProps';
 
 @Controller()
 export class AuthController {
