@@ -32,6 +32,8 @@ export class RenderService implements OnModuleInit {
     return this.server;
   }
 
+  // TODO: replace with filter
+  // https://github.com/kyle-mccarthy/nest-next/blob/156b4b5cd00951b898e5c4c647337ce32bae75f5/lib/render.filter.ts#L51
   render<Props>(
     req: BaseNextRequest | IncomingMessage,
     res: ServerResponse | BaseNextResponse,
