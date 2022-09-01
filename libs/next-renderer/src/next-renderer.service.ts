@@ -1,35 +1,37 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
-import next from 'next';
+import { Inject, Injectable } from '@nestjs/common';
 import { NextServer } from 'next/dist/server/next';
+import next from 'next';
 import { BaseNextRequest, BaseNextResponse } from 'next/dist/server/base-http';
 import { IncomingMessage, ServerResponse } from 'http';
+import { NextRendererOptions } from '@app/next-renderer/next-renderer.interfaces';
+import { NEXT_RENDERER_OPTIONS } from '@app/next-renderer/next-renderer.constants';
 
 @Injectable()
-export class RenderService implements OnModuleInit {
-  private server: NextServer;
+export class NextRendererService {
+  private nextServer: NextServer;
 
+  constructor(
+    @Inject(NEXT_RENDERER_OPTIONS) private options: NextRendererOptions,
+  ) {}
+
+  /**
+   * Start the Next server on module initialization
+   */
   async onModuleInit(): Promise<void> {
     try {
-      this.server = next({
-        // TODO: move to module config
-        dev: process.env.NODE_ENV !== 'production',
-        dir: './src/client',
-        customServer: true,
-        conf: {
-          // Disabling file-system routing, so we can explicitly handle the routing
-          // https://nextjs.org/docs/advanced-features/custom-server#disabling-file-system-routing
-          useFileSystemPublicRoutes: false,
-        },
+      this.nextServer = next({
+        ...this.options,
       });
 
-      await this.server.prepare();
+      await this.nextServer.prepare();
     } catch (error) {
+      // TODO: improve error handling
       console.log(error);
     }
   }
 
   getNextServer(): NextServer {
-    return this.server;
+    return this.nextServer;
   }
 
   // TODO: replace with filter
@@ -42,6 +44,6 @@ export class RenderService implements OnModuleInit {
   ): Promise<void> {
     // eslint-disable-next-line @typescript-eslint/ban-ts-comment
     // @ts-ignore
-    return this.server.render(req, res, pathname, { props: props ?? {} });
+    return this.nextServer.render(req, res, pathname, { props: props ?? {} });
   }
 }

@@ -1,16 +1,16 @@
 import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { MercuryServerService } from './services/mercury-server.service';
-import { RenderService } from '../render/render.service';
 import { UsersService } from './users/users.service';
 import { LoginPageProps } from '../../../shared/LoginPageProps';
+import { NextRendererService } from '@app/next-renderer';
 
 @Controller()
 export class AuthController {
   constructor(
     private readonly userService: UsersService,
     private readonly mercuryServerService: MercuryServerService,
-    private readonly renderService: RenderService,
+    private readonly nextRendererService: NextRendererService,
   ) {}
 
   @Get('login')
@@ -29,7 +29,12 @@ export class AuthController {
     // TODO
 
     // Render the page with nextjs
-    return this.renderService.render(req.raw, res.raw, '/login', undefined);
+    return this.nextRendererService.render(
+      req.raw,
+      res.raw,
+      '/login',
+      undefined,
+    );
   }
 
   @Post('login')
@@ -46,7 +51,7 @@ export class AuthController {
     try {
       user = await this.userService.validate(body.username, body.password);
     } catch (e) {
-      return this.renderService.render<LoginPageProps>(
+      return this.nextRendererService.render<LoginPageProps>(
         req.raw,
         res.raw,
         '/login',
@@ -70,7 +75,12 @@ export class AuthController {
 
   @Get('register')
   async getRegister(@Req() req: FastifyRequest, @Res() res: FastifyReply) {
-    return this.renderService.render(req.raw, res.raw, '/register', undefined);
+    return this.nextRendererService.render(
+      req.raw,
+      res.raw,
+      '/register',
+      undefined,
+    );
   }
 
   @Post('register')

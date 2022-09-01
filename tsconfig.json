@@ -17,7 +17,17 @@
     "strictBindCallApply": false,
     "forceConsistentCasingInFileNames": false,
     "noFallthroughCasesInSwitch": false,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    "paths": {
+      "@app/next-renderer": [
+        "libs/next-renderer/src"
+      ],
+      "@app/next-renderer/*": [
+        "libs/next-renderer/src/*"
+      ]
+    }
   },
-  "include": ["./src/server/**/*.ts"]
+  "include": [
+    "./src/server/**/*.ts"
+  ]
 }
