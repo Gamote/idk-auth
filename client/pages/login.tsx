@@ -1,8 +1,8 @@
 import React from 'react';
 import { FC } from 'react';
 import LoginForm from '../components/organisms/LoginForm';
-import { LoginPageProps } from '../../shared/LoginPageProps';
-import { FastifyGetServerSideProps } from '../../../libs/next-renderer/src';
+import { LoginPageProps } from '../../src/shared/LoginPageProps';
+import { FastifyGetServerSideProps } from 'nest-next-renderer';
 
 const LoginPage: FC = ({ error }: LoginPageProps) => (
   <div>

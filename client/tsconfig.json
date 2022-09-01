@@ -17,7 +17,18 @@
     "moduleResolution": "node",
     "resolveJsonModule": true,
     "isolatedModules": true,
-    "jsx": "preserve"
+    "jsx": "preserve",
+    // We need this because we are using files from the next-renderer repo.
+    // Move it to a separate package if we want to avoid the need of keeping this in sync.
+    "experimentalDecorators": true,
+    "paths": {
+      "@app/next-renderer": [
+        "../libs/next-renderer/src"
+      ],
+      "@app/next-renderer/*": [
+        "../libs/next-renderer/src/*"
+      ]
+    }
   },
   "include": [
     "next-env.d.ts",

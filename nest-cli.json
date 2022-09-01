@@ -1,19 +1,5 @@
 {
   "$schema": "https://json.schemastore.org/nest-cli",
   "collection": "@nestjs/schematics",
-  "sourceRoot": "src/server",
-  "projects": {
-    "next-renderer": {
-      "type": "library",
-      "root": "libs/next-renderer",
-      "entryFile": "index",
-      "sourceRoot": "libs/next-renderer/src",
-      "compilerOptions": {
-        "tsConfigPath": "libs/next-renderer/tsconfig.lib.json"
-      }
-    }
-  },
-  "compilerOptions": {
-    "webpack": true
-  }
+  "sourceRoot": "src"
 }

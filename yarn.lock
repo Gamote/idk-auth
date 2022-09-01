@@ -4186,6 +4186,11 @@ neo-async@^2.6.2:
   resolved "https://registry.yarnpkg.com/neo-async/-/neo-async-2.6.2.tgz#b4aafb93e3aeb2d8174ca53cf163ab7d7308305f"
   integrity sha512-Yd3UES5mWCSqR+qNT93S3UoYUkqAZ9lLg8a7g9rimsWmYGK8cVToA4/sF3RrshdyV3sAGMXVUmpMYOw+dLpOuw==
 
+nest-next-renderer@^1.0.1:
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/nest-next-renderer/-/nest-next-renderer-1.0.1.tgz#e4a977f00dd83824dcb1a2e3fb4d717084936c83"
+  integrity sha512-ol9RhS1PpNC1HVSBNsfeHka300P9mXHaj/zZCGn41RpEhHvESldO9hqx+WDAsT0Szns8fzTv0SYjdZKJMOK22w==
+
 next@^12.2.5:
   version "12.2.5"
   resolved "https://registry.yarnpkg.com/next/-/next-12.2.5.tgz#14fb5975e8841fad09553b8ef41fe1393602b717"

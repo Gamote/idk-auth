@@ -2,8 +2,8 @@ import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { MercuryServerService } from './services/mercury-server.service';
 import { UsersService } from './users/users.service';
-import { LoginPageProps } from '../../../shared/LoginPageProps';
-import { NextRendererService } from '@app/next-renderer';
+import { LoginPageProps } from '../../shared/LoginPageProps';
+import { NextRendererService } from 'nest-next-renderer';
 
 @Controller()
 export class AuthController {
