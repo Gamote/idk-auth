@@ -5,7 +5,7 @@ import {
   FastifyAdapter,
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
-import { fastifyCookiePlugin } from "./lib/cookie/fastify-cookie-plugin";
+import { fastifyCookiePlugin } from './lib/cookie/fastify-cookie-plugin';
 
 const bootstrap = async () => {
   const fastify = new FastifyAdapter();

@@ -1,4 +1,4 @@
-const path = require("path");
+const path = require('path');
 
 /** @type {import('tailwindcss').Config} */
 module.exports = {
@@ -9,7 +9,5 @@ module.exports = {
   theme: {
     extend: {},
   },
-  plugins: [
-    require('@tailwindcss/forms'),
-  ],
-}
+  plugins: [require('@tailwindcss/forms')],
+};

@@ -13,7 +13,7 @@ export class RenderService implements OnModuleInit {
       this.server = next({
         // TODO: move to module config
         dev: process.env.NODE_ENV !== 'production',
-        dir: './client',
+        dir: './src/client',
         customServer: true,
         conf: {
           // Disabling file-system routing, so we can explicitly handle the routing

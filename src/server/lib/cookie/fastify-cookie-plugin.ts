@@ -1,13 +1,13 @@
-import { FastifyInstance } from "fastify/types/instance";
-import { parseCookies, setCookie } from "./cookie-helpers";
-import { CookieParseOptions, CookieSerializeOptions, serialize } from "cookie";
-import fp from "fastify-plugin";
-import { FastifyReply } from "fastify";
+import { FastifyInstance } from 'fastify/types/instance';
+import { parseCookies, setCookie } from './cookie-helpers';
+import { CookieParseOptions, CookieSerializeOptions } from 'cookie';
+import fp from 'fastify-plugin';
+import { FastifyReply } from 'fastify';
 
 /**
  * Declare the extra types added by the Fastify plugin.
  */
-declare module "fastify" {
+declare module 'fastify' {
   interface FastifyRequest {
     /**
      * Request cookies
@@ -26,10 +26,9 @@ declare module "fastify" {
     setCookie(
       name: string,
       value: string,
-      options?: CookieSerializeOptions
+      options?: CookieSerializeOptions,
     ): this;
   }
-
 }
 
 export interface FastifyCookieOptions {
@@ -51,14 +50,22 @@ export const fastifyCookiePlugin = fp(
   async (fastify: FastifyInstance, options: FastifyCookieOptions) => {
     // Parse cookies
     fastify.decorateRequest('cookies', null);
-    fastify.addHook("onRequest", (req, res, next) => {
+    fastify.addHook('onRequest', (req, res, next) => {
       req.cookies = parseCookies(req.raw, options.parseOptions);
       next();
     });
 
     // Set cookies method
-    fastify.decorateReply('setCookie', function (this: FastifyReply, name: string, value: string, options?: CookieSerializeOptions) {
-      setCookie(this.raw, name, value, options);
-    });
-  }
+    fastify.decorateReply(
+      'setCookie',
+      function (
+        this: FastifyReply,
+        name: string,
+        value: string,
+        options?: CookieSerializeOptions,
+      ) {
+        setCookie(this.raw, name, value, options);
+      },
+    );
+  },
 );
