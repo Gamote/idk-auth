@@ -3,38 +3,17 @@ import { FastifyRequest, FastifyReply } from 'fastify';
 import { MercuryServerService } from './services/mercury-server.service';
 import { UsersService } from './users/users.service';
 import { LoginPageProps } from '../../shared/LoginPageProps';
-import { NextRendererService } from 'nest-next-renderer';
 
 @Controller()
 export class AuthController {
   constructor(
     private readonly userService: UsersService,
     private readonly mercuryServerService: MercuryServerService,
-    private readonly nextRendererService: NextRendererService,
   ) {}
 
   @Get('login')
-  async getLogin(@Req() req: FastifyRequest, @Res() res: FastifyReply) {
-    // Return directly
-    // return {
-    //   props: {
-    //     isLoggedIn: false,
-    //   }
-    // };
-
-    // Render an 404 with nextjs
-    // return this.renderService.getNextServer().render404(req.raw, res.raw);
-
-    // Render an 404 without nextjs
-    // TODO
-
-    // Render the page with nextjs
-    return this.nextRendererService.render(
-      req.raw,
-      res.raw,
-      '/login',
-      undefined,
-    );
+  async getLogin(@Res() res: FastifyReply) {
+    return res.render('/login', undefined);
   }
 
   @Post('login')
@@ -43,27 +22,23 @@ export class AuthController {
     @Res() res: FastifyReply,
     @Body() body: any,
   ) {
-    console.log('Login::cookies', req.cookies);
-    console.log('Login::body', body);
-
     let user;
 
+    // Check if the user exists and if the password is correct
     try {
       user = await this.userService.validate(body.username, body.password);
     } catch (e) {
-      return this.nextRendererService.render<LoginPageProps>(
-        req.raw,
-        res.raw,
-        '/login',
-        {
-          error: e.message,
-        },
-      );
+      return res.render<LoginPageProps>('/login', {
+        error: e.message,
+      });
     }
 
-    // TODO: set the user in the session
+    console.log('Login::cookies', req.cookies);
+    console.log('Login::body', body);
     console.log('Login::user', user);
 
+    // Set session cookie
+    // TODO: set the user in the session
     res.setCookie('mauth', `secret-${user.id}`, {
       httpOnly: true,
       sameSite: 'strict',
@@ -75,16 +50,11 @@ export class AuthController {
 
   @Get('register')
   async getRegister(@Req() req: FastifyRequest, @Res() res: FastifyReply) {
-    return this.nextRendererService.render(
-      req.raw,
-      res.raw,
-      '/register',
-      undefined,
-    );
+    return res.render('/register', undefined);
   }
 
   @Post('register')
-  async postRegister(@Body() body: any) {
+  async postRegister() {
     throw new Error('Method not implemented.');
   }
 
@@ -120,6 +90,7 @@ export class AuthController {
   // TODO: delete after testing
   @Get('callback')
   async callback(@Req() req: FastifyRequest) {
+    // TODO: implement
     return {
       query: req.query,
     };
