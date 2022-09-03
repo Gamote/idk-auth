@@ -1,8 +1,9 @@
-import { Body, Controller, Get, Post, Req, Res } from '@nestjs/common';
+import { Body, Controller, Get, Post, Query, Req, Res } from '@nestjs/common';
 import { FastifyRequest, FastifyReply } from 'fastify';
 import { MercuryServerService } from './services/mercury-server.service';
 import { UsersService } from './users/users.service';
-import { LoginPageProps } from '../../shared/LoginPageProps';
+import { PasswordPageProps } from '../../shared/PasswordPageProps';
+import { IdentifierPageProps } from '../../shared/IdentifierPageProps';
 
 @Controller()
 export class AuthController {
@@ -11,25 +12,103 @@ export class AuthController {
     private readonly mercuryServerService: MercuryServerService,
   ) {}
 
-  @Get('login')
-  async getLogin(@Res() res: FastifyReply) {
-    return res.render('/login', undefined);
+  @Get('identifier')
+  async getIdentifier(@Query('state') state: string, @Res() res: FastifyReply) {
+    if (!state) {
+      throw new Error('We need a state to continue');
+    }
+
+    return res.render<IdentifierPageProps>('/identifier', {
+      state,
+    });
   }
 
-  @Post('login')
-  async postLogin(
+  /**
+   * Post route for the identifier page
+   * TODO: validate the state and the username
+   *
+   * @param queryState
+   * @param bodyState
+   * @param username
+   * @param res
+   */
+  @Post('identifier')
+  async postIdentifier(
+    @Query('state') queryState: string,
+    @Body('state') bodyState: string,
+    @Body('username') username: string,
+    @Res() res: FastifyReply,
+  ) {
+    if (!queryState || !bodyState) {
+      throw new Error('State needs to be specified in both query and body');
+    }
+
+    if (queryState !== bodyState) {
+      throw new Error('Both states must match');
+    }
+
+    if (!username) {
+      throw new Error('Username must be specified');
+    }
+
+    const queryParams = new URLSearchParams();
+
+    queryParams.append('state', bodyState);
+    // TODO: check if we should deliver the username in a different way
+    //  e.g. Auth0 is keeping in somewhere on the server
+    queryParams.append('username', username);
+
+    return res.redirect(302, `/password?${queryParams.toString()}`);
+  }
+
+  @Get('password')
+  async getPassword(
+    @Query('state') state: string,
+    @Query('username') username: string,
+    @Res() res: FastifyReply,
+  ) {
+    if (!state) {
+      throw new Error('We need a state to continue');
+    }
+
+    if (!username) {
+      throw new Error('Username must be specified');
+    }
+
+    return res.render<PasswordPageProps>('/password', { state, username });
+  }
+
+  @Post('password')
+  async postPassword(
+    @Query('state') queryState: string,
+    @Body('state') bodyState: string,
+    @Query('username') username: string,
     @Req() req: FastifyRequest,
     @Res() res: FastifyReply,
     @Body() body: any,
   ) {
+    if (!queryState || !bodyState) {
+      throw new Error('State needs to be specified in both query and body');
+    }
+
+    if (queryState !== bodyState) {
+      throw new Error('Both states must match');
+    }
+
+    if (!username) {
+      throw new Error('Username must be specified');
+    }
+
     let user;
 
     // Check if the user exists and if the password is correct
     try {
       user = await this.userService.validate(body.username, body.password);
     } catch (e) {
-      return res.render<LoginPageProps>('/login', {
+      return res.render<PasswordPageProps>('/password', {
         error: e.message,
+        state: bodyState,
+        username,
       });
     }
 
@@ -39,13 +118,14 @@ export class AuthController {
 
     // Set session cookie
     // TODO: set the user in the session
-    res.setCookie('mauth', `secret-${user.id}`, {
+    res.setCookie('mauth', `secret-userId-${user.id}`, {
       httpOnly: true,
       sameSite: 'strict',
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    return res.status(302).redirect('/');
+    // TODO: read state1 and return to authorize/resume?state=${state2}
+    return res.redirect(302, '/');
   }
 
   @Get('register')
@@ -60,6 +140,13 @@ export class AuthController {
 
   @Get('authorize')
   async authorize(@Req() req: FastifyRequest, @Res() res: FastifyReply) {
+    console.log('Authorize::cookies', req.cookies);
+
+    if (!req.cookies.mauth) {
+      // TODO: pass state to redirect back after login
+      return res.redirect(302, '/identifier');
+    }
+
     // TODO: get the user
     // TODO: if not logged in, redirect to login page and pass the current URL as a query param so we can redirect back to it after login
     const user = { id: 'test-user-id' };

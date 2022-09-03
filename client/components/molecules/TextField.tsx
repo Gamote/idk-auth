@@ -20,7 +20,7 @@ export type TextFieldProps = {
   id: string;
   name: string;
   type: HTMLInputTypeAttribute;
-  label: string;
+  label?: string;
   placeholder?: string;
   autoComplete?: TextFieldAutoComplete;
   onChange?: ChangeEventHandler<HTMLInputElement>;
@@ -61,9 +61,11 @@ const TextField: FC<TextFieldProps> = ({
 
   return (
     <div>
-      <label htmlFor={id} className="block text-sm font-medium text-gray-700">
-        {label}
-      </label>
+      {label && (
+        <label htmlFor={id} className="block text-sm font-medium text-gray-700">
+          {label}
+        </label>
+      )}
 
       <div className="relative mt-1 rounded-md shadow-sm">
         <input

@@ -1,9 +1,9 @@
 import { LockClosedIcon } from '@heroicons/react/24/solid';
 import React, { FC } from 'react';
 import * as yup from 'yup';
-import useCustomFormik from '../../shared/useCustomFormik';
-import { registerSchema } from '../../shared/validation';
-import TextField, { TextFieldAutoComplete } from '../molecules/TextField';
+import useCustomFormik from '../../../shared/useCustomFormik';
+import { registerSchema } from '../../../shared/validation';
+import TextField, { TextFieldAutoComplete } from '../../molecules/TextField';
 
 export type RegisterFormValues = yup.InferType<typeof registerSchema>;
 

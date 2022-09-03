@@ -34,7 +34,7 @@ export class MercuryStorageAdapterService
       name: 'test_client',
       secret: 'test_client_secret',
       grants: [GrantType.AuthorizationCode],
-      redirectUris: ['http://localhost:3400/auth/callback'],
+      redirectUris: ['http://localhost:3400/callback'],
     },
   ];
   private tokens: (Token & { clientId: string })[] = [];
