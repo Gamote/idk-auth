@@ -4,7 +4,7 @@ import { MercuryServerService } from './services/mercury-server.service';
 import { UsersService } from './users/users.service';
 import { PasswordPageProps } from '../../shared/PasswordPageProps';
 import { IdentifierPageProps } from '../../shared/IdentifierPageProps';
-import { decodeState, encodeState } from '../../lib/cookie/state.helper';
+import { decodeState, encodeState } from '../../lib/state.helper';
 
 export enum RoutePaths {
   REGISTER = 'register',
@@ -12,6 +12,7 @@ export enum RoutePaths {
   PASSWORD = 'password',
   AUTHORIZE = 'authorize',
   AUTHORIZE_RESUME = 'authorize/resume',
+  TOKEN = 'token',
 }
 
 @Controller()
@@ -21,10 +22,59 @@ export class AuthController {
     private readonly mercuryServerService: MercuryServerService,
   ) {}
 
+  @Get(RoutePaths.AUTHORIZE)
+  async authorize(@Req() req: FastifyRequest, @Res() res: FastifyReply) {
+    console.log('Authorize::cookies', req.cookies);
+
+    if (!req.cookies.mauth) {
+      // TODO: pass state to redirect back after login
+      const queryParams = new URLSearchParams();
+
+      queryParams.append('state', encodeState({ resumeUrl: req.url }));
+
+      return res.redirect(
+        302,
+        `${RoutePaths.IDENTIFIER}?${queryParams.toString()}`,
+      );
+    }
+
+    // TODO: get the user
+    // TODO: if not logged in, redirect to login page and pass the current URL as a query param so we can redirect back to it after login
+    const user = { id: 'test-user-id' };
+
+    const authorizationResponse =
+      await this.mercuryServerService.server.authorize(
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        this.mercuryServerService.requestToMercuryRequest(req),
+        user,
+      );
+
+    switch (authorizationResponse.__typename) {
+      // If success redirect
+      case 'AuthorizationSuccessResponse':
+        return res.status(302).redirect(authorizationResponse.redirectUri);
+
+      // If error redirect to a redirect URI if provided, otherwise return the error
+      case 'AuthorizationErrorResponse':
+        if (authorizationResponse.redirectUri) {
+          return res.status(302).redirect(authorizationResponse.redirectUri);
+        }
+
+        return res
+          .status(authorizationResponse.error.statusCode)
+          .send(authorizationResponse.errorBody);
+    }
+  }
+
   @Get(RoutePaths.IDENTIFIER)
   async getIdentifier(@Query('state') state: string, @Res() res: FastifyReply) {
     if (!state) {
       throw new Error('We need a state to continue');
+    }
+
+    if (!decodeState(state)) {
+      throw new Error('The state is invalid');
     }
 
     return res.render<IdentifierPageProps>(RoutePaths.IDENTIFIER, {
@@ -56,6 +106,10 @@ export class AuthController {
       throw new Error('Both states must match');
     }
 
+    if (!decodeState(bodyState)) {
+      throw new Error('The state is invalid');
+    }
+
     if (!username) {
       throw new Error('Username must be specified');
     }
@@ -83,6 +137,10 @@ export class AuthController {
       throw new Error('We need a state to continue');
     }
 
+    if (!decodeState(state)) {
+      throw new Error('The state is invalid');
+    }
+
     if (!username) {
       throw new Error('Username must be specified');
     }
@@ -108,6 +166,10 @@ export class AuthController {
 
     if (queryState !== bodyState) {
       throw new Error('Both states must match');
+    }
+
+    if (!decodeState(bodyState)) {
+      throw new Error('The state is invalid');
     }
 
     if (!username) {
@@ -155,49 +217,6 @@ export class AuthController {
     throw new Error('Method not implemented.');
   }
 
-  @Get(RoutePaths.AUTHORIZE)
-  async authorize(@Req() req: FastifyRequest, @Res() res: FastifyReply) {
-    console.log('Authorize::cookies', req.cookies);
-
-    if (!req.cookies.mauth) {
-      // TODO: pass state to redirect back after login
-      const queryParams = new URLSearchParams();
-
-      queryParams.append('state', encodeState({ resumeUrl: req.url }));
-
-      return res.redirect(
-        302,
-        `${RoutePaths.IDENTIFIER}?${queryParams.toString()}`,
-      );
-    }
-
-    // TODO: get the user
-    // TODO: if not logged in, redirect to login page and pass the current URL as a query param so we can redirect back to it after login
-    const user = { id: 'test-user-id' };
-
-    const authorizationResponse =
-      await this.mercuryServerService.server.authorize(
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        // @ts-ignore
-        this.mercuryServerService.requestToMercuryRequest(req),
-        user,
-      );
-
-    switch (authorizationResponse.__typename) {
-      // If success redirect
-      case 'AuthorizationSuccessResponse':
-        return res.status(302).redirect(authorizationResponse.redirectUri);
-
-      // If error redirect to a redirect URI if provided, otherwise return the error
-      case 'AuthorizationErrorResponse':
-        if (authorizationResponse.redirectUri) {
-          return res.status(302).redirect(authorizationResponse.redirectUri);
-        }
-
-        return authorizationResponse.error;
-    }
-  }
-
   @Get(RoutePaths.AUTHORIZE_RESUME)
   async getAuthorizeResume(
     @Query('state') state: string,
@@ -207,13 +226,30 @@ export class AuthController {
       throw new Error('We need a state to continue');
     }
 
-    const { resumeUrl } = decodeState(state);
+    const decodedState = decodeState(state);
 
-    if (!resumeUrl) {
-      throw new Error('We need a `resumeUrl` to continue');
+    if (!decodedState) {
+      throw new Error('The state is invalid');
     }
 
-    return res.redirect(302, resumeUrl);
+    return res.redirect(302, decodedState.resumeUrl);
+  }
+
+  @Post(RoutePaths.TOKEN)
+  async postToken(@Req() req: FastifyRequest, @Res() res: FastifyReply) {
+    const tokenResponse = await this.mercuryServerService.server.token(
+      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+      // @ts-ignore
+      this.mercuryServerService.requestToMercuryRequest(req),
+    );
+
+    if ('data' in tokenResponse) {
+      return res.status(200).send(tokenResponse.data);
+    }
+
+    return res
+      .status(tokenResponse.error.statusCode)
+      .send(tokenResponse.errorBody);
   }
 
   // TODO: delete after testing

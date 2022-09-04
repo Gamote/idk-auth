@@ -4,7 +4,7 @@ import RegisterForm, {
   RegisterFormProps,
 } from '../components/organisms/auth/RegisterForm';
 
-const Register: FC = () => {
+const RegisterPage: FC = () => {
   const onSubmit: RegisterFormProps['onSubmit'] = async (values) => {
     console.info('Register values', values);
   };
@@ -16,4 +16,4 @@ const Register: FC = () => {
   );
 };
 
-export default Register;
+export default RegisterPage;

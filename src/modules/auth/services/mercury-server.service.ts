@@ -33,34 +33,4 @@ export class MercuryServerService {
       body: request.body,
     });
   }
-
-  /**
-   * TODO: describe this
-   * @param request
-   * @param reply
-   */
-  async authorizeHandler(request: MercuryRequestType, reply): Promise<void> {
-    // TODO: get the user
-    // TODO: if not logged in, redirect to login page and pass the current URL as a query param so we can redirect back to it after login
-    const user = { id: 'test-user-id' };
-
-    const authorizationResponse = await this.server.authorize(
-      this.requestToMercuryRequest(request),
-      user,
-    );
-
-    switch (authorizationResponse.__typename) {
-      // If success redirect
-      case 'AuthorizationSuccessResponse':
-        return reply.redirect(authorizationResponse.redirectUri);
-
-      // If error redirect to a redirect URI if provided, otherwise return the error
-      case 'AuthorizationErrorResponse':
-        if (authorizationResponse.redirectUri) {
-          return reply.redirect(authorizationResponse.redirectUri);
-        }
-
-        return reply.send(authorizationResponse.redirectUri);
-    }
-  }
 }
