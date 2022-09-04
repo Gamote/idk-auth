@@ -4,6 +4,15 @@ import { MercuryServerService } from './services/mercury-server.service';
 import { UsersService } from './users/users.service';
 import { PasswordPageProps } from '../../shared/PasswordPageProps';
 import { IdentifierPageProps } from '../../shared/IdentifierPageProps';
+import { decodeState, encodeState } from '../../lib/cookie/state.helper';
+
+export enum RoutePaths {
+  REGISTER = 'register',
+  IDENTIFIER = 'identifier',
+  PASSWORD = 'password',
+  AUTHORIZE = 'authorize',
+  AUTHORIZE_RESUME = 'authorize/resume',
+}
 
 @Controller()
 export class AuthController {
@@ -12,13 +21,13 @@ export class AuthController {
     private readonly mercuryServerService: MercuryServerService,
   ) {}
 
-  @Get('identifier')
+  @Get(RoutePaths.IDENTIFIER)
   async getIdentifier(@Query('state') state: string, @Res() res: FastifyReply) {
     if (!state) {
       throw new Error('We need a state to continue');
     }
 
-    return res.render<IdentifierPageProps>('/identifier', {
+    return res.render<IdentifierPageProps>(RoutePaths.IDENTIFIER, {
       state,
     });
   }
@@ -32,7 +41,7 @@ export class AuthController {
    * @param username
    * @param res
    */
-  @Post('identifier')
+  @Post(RoutePaths.IDENTIFIER)
   async postIdentifier(
     @Query('state') queryState: string,
     @Body('state') bodyState: string,
@@ -58,10 +67,13 @@ export class AuthController {
     //  e.g. Auth0 is keeping in somewhere on the server
     queryParams.append('username', username);
 
-    return res.redirect(302, `/password?${queryParams.toString()}`);
+    return res.redirect(
+      302,
+      `${RoutePaths.PASSWORD}?${queryParams.toString()}`,
+    );
   }
 
-  @Get('password')
+  @Get(RoutePaths.PASSWORD)
   async getPassword(
     @Query('state') state: string,
     @Query('username') username: string,
@@ -75,10 +87,13 @@ export class AuthController {
       throw new Error('Username must be specified');
     }
 
-    return res.render<PasswordPageProps>('/password', { state, username });
+    return res.render<PasswordPageProps>(RoutePaths.PASSWORD, {
+      state,
+      username,
+    });
   }
 
-  @Post('password')
+  @Post(RoutePaths.PASSWORD)
   async postPassword(
     @Query('state') queryState: string,
     @Body('state') bodyState: string,
@@ -105,7 +120,7 @@ export class AuthController {
     try {
       user = await this.userService.validate(body.username, body.password);
     } catch (e) {
-      return res.render<PasswordPageProps>('/password', {
+      return res.render<PasswordPageProps>(RoutePaths.PASSWORD, {
         error: e.message,
         state: bodyState,
         username,
@@ -124,27 +139,36 @@ export class AuthController {
       maxAge: 7 * 24 * 60 * 60 * 1000,
     });
 
-    // TODO: read state1 and return to authorize/resume?state=${state2}
-    return res.redirect(302, '/');
+    // TODO: read state1 and transform it into a state2 to be consumed by authorize/resume?state=${state2}
+    const state2 = bodyState;
+
+    return res.redirect(302, `${RoutePaths.AUTHORIZE_RESUME}?state=${state2}`);
   }
 
-  @Get('register')
+  @Get(RoutePaths.REGISTER)
   async getRegister(@Req() req: FastifyRequest, @Res() res: FastifyReply) {
-    return res.render('/register', undefined);
+    return res.render(RoutePaths.REGISTER, undefined);
   }
 
-  @Post('register')
+  @Post(RoutePaths.REGISTER)
   async postRegister() {
     throw new Error('Method not implemented.');
   }
 
-  @Get('authorize')
+  @Get(RoutePaths.AUTHORIZE)
   async authorize(@Req() req: FastifyRequest, @Res() res: FastifyReply) {
     console.log('Authorize::cookies', req.cookies);
 
     if (!req.cookies.mauth) {
       // TODO: pass state to redirect back after login
-      return res.redirect(302, '/identifier');
+      const queryParams = new URLSearchParams();
+
+      queryParams.append('state', encodeState({ resumeUrl: req.url }));
+
+      return res.redirect(
+        302,
+        `${RoutePaths.IDENTIFIER}?${queryParams.toString()}`,
+      );
     }
 
     // TODO: get the user
@@ -172,6 +196,24 @@ export class AuthController {
 
         return authorizationResponse.error;
     }
+  }
+
+  @Get(RoutePaths.AUTHORIZE_RESUME)
+  async getAuthorizeResume(
+    @Query('state') state: string,
+    @Res() res: FastifyReply,
+  ) {
+    if (!state) {
+      throw new Error('We need a state to continue');
+    }
+
+    const { resumeUrl } = decodeState(state);
+
+    if (!resumeUrl) {
+      throw new Error('We need a `resumeUrl` to continue');
+    }
+
+    return res.redirect(302, resumeUrl);
   }
 
   // TODO: delete after testing
